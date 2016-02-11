@@ -1,5 +1,8 @@
 import Foundation
 
+let databaseQueue = dispatch_queue_create("com.orca.queue",
+                                          DISPATCH_QUEUE_SERIAL)
+
 public struct Query<T: Model> {
 
     public typealias SingleHandler = (model: T?, error: ErrorType?) -> ()
@@ -27,10 +30,8 @@ public struct Query<T: Model> {
 	}
 
     func save(model: T, handler: SaveHandler) {
-        let queue =
-            dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0)
 
-        dispatch_async(queue) {
+        dispatch_async(databaseQueue) {
 
             if model.identifier == nil {
                 model.identifier =
