@@ -3,7 +3,7 @@ import Foundation
 
 public protocol Model: class {
     var identifier: String? { get set }
-    init?(serialized: [String: DataType]) throws
+    init?(serialized: [String: DataType])
 }
 
 extension Model {
@@ -65,26 +65,47 @@ extension Model {
 
     public func save(database database: Orca, handler: (error: ErrorType?) -> ()) {
 
-            Query(database: database).save(self) { (identifier, error) in
-                if error == nil, let identifier = identifier {
-                    self.identifier = identifier
-                }
+            Query(database: database).save(self) { (model, error) in
                 handler(error: error)
-            }
+     
+        }
     }
 
     public func delete(handler: (error: ErrorType?) -> ()) {
-
+        self.delete(Orca.defaultOrca, handler: handler)
+    }
+    
+    public func delete(database: Orca, handler: (error: ErrorType?) -> ()) {
+        
+        guard let identifier = self.identifier else {
+            handler(error: DriverError.NoIdentifier)
+            return
+        }
+        
+        let filter = CompareFilter(key: "identifier", value: identifier, comparison: .Equals)
+        let filters: [Filter] = [filter]
+        Query(database: database, filters: filters)
+            .delete(self, handler: handler)
     }
 
     public static func find(identifier: String,
         handler: (model: Self?, error: ErrorType?) -> ()) {
+        
         find(Orca.defaultOrca, identifier: identifier, handler: handler)
     }
     
     public static func find(database: Orca, identifier: String,
                             handler: (model: Self?, error: ErrorType?) -> ()) {
         Query(database: database).find(identifier, handler: handler)
+    }
+    
+    public static func findAll(handler: (models: [Self], error: ErrorType?) -> ()) {
+        findAll(Orca.defaultOrca, handler: handler)
+    }
+    
+    public static func findAll(database: Orca,
+                               handler: (models: [Self], error: ErrorType?) -> ()) {
+        Query(database: database).find(self, handler: handler)
     }
 
     static var collection: String {

@@ -38,6 +38,29 @@ extension MemoryDriver: Driver {
     public func generateUniqueIdentifier() -> String {
         return NSUUID().UUIDString
     }
+    
+    public func find(collection collection: String, filters: [Filter])
+        throws -> [[String: DataType]] {
+        
+            if filters.count == 0 {
+                
+                // Find all.
+                if let collection = self.store[collection] {
+                    
+                    var models = [[String: DataType]]()
+                    
+                    for (_, value) in collection {
+                        models.append(value)
+                    }
+                    
+                    return models
+                } else {
+                    throw DriverError.NotFound
+                }
+            } else {
+                throw DriverError.NotImplemented
+            }
+    }
 
     public func findOne(collection collection: String,
         filters: [Filter]) throws -> [String: DataType] {
@@ -116,6 +139,14 @@ extension MemoryDriver: Driver {
 
     public func delete (collection collection: String,
         filters: [Filter]) throws {
-
+        
+        let object = try findOne(collection: collection, filters: filters)
+        
+        guard let identifier = object["identifier"] as? String else {
+            throw DriverError.NotFound
+        }
+        
+        store[collection]?[identifier] = nil
+        
     }
 }
