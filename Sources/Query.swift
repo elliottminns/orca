@@ -11,22 +11,43 @@ public struct Query<T: Model> {
 
     let database: Orca
     let collection: String
-    var filters = [Filter]()
+    let filters: [Filter]
 
     init(database: Orca) {
         self.database = database
         collection = T.collection
+        filters = []
+    }
+    
+    init(database: Orca, filters: [Filter]) {
+        self.database = database
+        collection = T.collection
+        self.filters = filters
     }
 
     public func first(handler: SingleHandler) {
-
+        
+        dispatch_async(databaseQueue) {
+            
+            do {
+                
+                let driver = self.database.driver
+                
+                let data = try driver.findOne(collection: self.collection,
+                                              filters: self.filters)
+                
+                let model = try T(serialized: data)
+                
+                handler(model: model, error: nil)
+                
+            } catch {
+                handler(model: nil, error: error)
+            }
+        }
     }
 
-    public mutating func find(id: String, handler: SingleHandler) {
-		return self.filter("identifier", id)
-            .first { (model: T?, error: ErrorType?) in
-
-        }
+    public func find(id: String, handler: SingleHandler) {
+		filter("identifier", id).first(handler)
 	}
 
     func save(model: T, handler: SaveHandler) {
@@ -59,13 +80,11 @@ public struct Query<T: Model> {
 
 extension Query {
 
-    mutating func filter(key: String, _ value: String) -> Query {
+    func filter(key: String, _ value: String) -> Query {
 
 		let filter = CompareFilter(key: key, value: value, comparison: .Equals)
 
-		self.filters.append(filter)
-
-		return self
+        return Query(database: database, filters: self.filters + [filter])
 	}
 
 }

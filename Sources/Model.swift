@@ -3,7 +3,7 @@ import Foundation
 
 public protocol Model: class {
     var identifier: String? { get set }
-    init?(serialized: [String: DataType])
+    init?(serialized: [String: DataType]) throws
 }
 
 extension Model {
@@ -73,12 +73,18 @@ extension Model {
             }
     }
 
-    public func delete(handler: (error: ErrorType) -> ()) {
+    public func delete(handler: (error: ErrorType?) -> ()) {
 
     }
 
     public static func find(identifier: String,
-        handler: (model: Self?, error: ErrorType) -> ()) {
+        handler: (model: Self?, error: ErrorType?) -> ()) {
+        find(Orca.defaultOrca, identifier: identifier, handler: handler)
+    }
+    
+    public static func find(database: Orca, identifier: String,
+                            handler: (model: Self?, error: ErrorType?) -> ()) {
+        Query(database: database).find(identifier, handler: handler)
     }
 
     static var collection: String {

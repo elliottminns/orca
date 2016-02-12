@@ -1,5 +1,6 @@
 public enum DriverError: ErrorType {
     case NoIdentifier
+    case NotFound
 }
 
 public protocol Driver {
