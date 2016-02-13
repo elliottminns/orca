@@ -10,7 +10,7 @@ public protocol Driver {
 
     func findOne(collection collection: String,
         filters: [Filter]) throws -> [String: DataType]
-    
+
     func find(collection collection: String, filters: [Filter])
         throws -> [[String: DataType]]
 
@@ -21,5 +21,5 @@ public protocol Driver {
         data: [String: DataType]) throws
 
     func delete(collection collection: String, filters: [Filter]) throws
-    
+
 }
