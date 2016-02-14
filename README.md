@@ -4,11 +4,11 @@
 
 A non-blocking I/O, asynchronous ODM. Written in Swift, inspired by Mongoose.
 
-[x] Powered by [Echo](https://github.com/elliottminns/echo)
-[x] Reflective
-[x] Asynchronous
-[x] Non-blocking
-[x] Beautiful Syntax
+- [x] Powered by [Echo](https://github.com/elliottminns/echo)
+- [x] Reflective
+- [x] Asynchronous
+- [x] Non-blocking
+- [x] Beautiful Syntax
 
 ## Getting Started
 
