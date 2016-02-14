@@ -1,4 +1,5 @@
 import Foundation
+import Echo
 
 let databaseQueue = dispatch_queue_create("com.orca.queue",
                                           DISPATCH_QUEUE_SERIAL)
@@ -18,7 +19,7 @@ public class Query<T: Model> {
     convenience init(database: Orca) {
         self.init(database: database, filters: [])
     }
-    
+
     init(database: Orca, filters: [Filter]) {
         self.database = database
         collection = T.collection
@@ -26,24 +27,24 @@ public class Query<T: Model> {
     }
 
     public func first(handler: SingleHandler) {
-        
+
         dispatch_async(databaseQueue) {
             do {
-                
+
                 let driver = self.database.driver
-                
+
                 let data = try driver.findOne(collection: self.collection,
                                               filters: self.filters)
-                
+
                 let model = T(serialized: data)
-                
-                dispatch_async(dispatch_get_main_queue(), { 
+
+                dispatch_async(dispatch_get_main_queue(), {
                     handler(model: model, error: nil)
                 })
-            
+
             } catch {
-                
-                dispatch_async(dispatch_get_main_queue(), { 
+
+                dispatch_async(dispatch_get_main_queue(), {
                     handler(model: nil, error: error)
                 })
             }
@@ -56,16 +57,16 @@ public class Query<T: Model> {
 
     public func find(model: T.Type, handler: MultipleHandler) {
         dispatch_async(databaseQueue) {
-            
+
             let err: ErrorType?
             var models: [T] = []
             do {
-                
+
                 let driver = self.database.driver
-                
+
                 let dataModels = try driver.find(collection: self.collection,
                                                  filters: self.filters)
-                
+
                 for data in dataModels {
                     if let model = T(serialized: data) {
                         models.append(model)
@@ -75,7 +76,7 @@ public class Query<T: Model> {
             } catch {
                 err = error
             }
-            
+
             dispatch_async(dispatch_get_main_queue()) {
                 handler(models: models, error: err)
             }
@@ -89,20 +90,20 @@ public class Query<T: Model> {
         } else {
             update(model, handler: handler)
         }
-        
+
     }
-    
+
     func insert(model: T, handler: SingleHandler) {
-    
+
         dispatch_async(databaseQueue) {
-            
+
             if model.identifier == nil {
                 model.identifier =
                     self.database.driver.generateUniqueIdentifier()
                 let data = model.serialize()
-                
+
                 let err: ErrorType?
-                
+
                 do {
                     try self.database.driver.insert(collection: self.collection,
                                                     data: data)
@@ -110,40 +111,40 @@ public class Query<T: Model> {
                 } catch {
                     err = error
                 }
-                
+
                 dispatch_async(dispatch_get_main_queue()) {
                     handler(model: model, error: err)
                 }
             }
-            
+
         }
     }
-    
+
     func update(model: T, handler: SingleHandler) {
-        dispatch_async(databaseQueue) { 
+        dispatch_async(databaseQueue) {
             let data = model.serialize()
             let err: ErrorType?
-            
+
             do {
                 try self.database.driver.insert(collection: self.collection,
                                                 data: data)
-                
+
                 err = nil
             } catch {
                 err = error
             }
-            
+
             dispatch_async(dispatch_get_main_queue()) {
                 handler(model: model, error: err)
             }
         }
     }
-    
+
     func delete(model: T, handler: Handler) {
         dispatch_async(databaseQueue) {
-            
+
             let err: ErrorType?
-            
+
             do {
                 try self.database.driver.delete(collection: self.collection,
                                                 filters: self.filters)
@@ -151,9 +152,9 @@ public class Query<T: Model> {
             } catch {
                 err = error
             }
-            
+
             handler(error: err)
-            
+
         }
     }
 }
