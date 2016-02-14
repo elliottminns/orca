@@ -1,5 +1,7 @@
 # Orca
 
+![Travis Badge](https://travis-ci.org/elliottminns/orca.svg?branch=master)
+
 A non-blocking I/O, asynchronous ODM. Written in Swift, inspired by Mongoose.
 
 [x] Powered by [Echo](https://github.com/elliottminns/echo)
