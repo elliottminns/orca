@@ -4,7 +4,8 @@
 final public class Orca {
 
     static var setDefault = false
-    static var defaultOrca: Orca = Orca()
+    
+    public static var defaultOrca: Orca = Orca()
 
     public let driver: Driver
 
