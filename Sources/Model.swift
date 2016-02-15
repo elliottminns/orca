@@ -9,7 +9,7 @@ public protocol Model: class {
 
 extension Model {
 
-    static public func schema() -> [String: DataType.Type] {
+    static public func fullSchema() -> [String: DataType.Type] {
 
         var schema = self.schema
 
