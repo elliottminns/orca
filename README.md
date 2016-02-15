@@ -56,6 +56,12 @@ class Cat: Model {
     // Required
     var identifier: String?
 
+    static var schema: [String: DataType.Type] {
+        return ["name": String.self,
+        "age": Int.self,
+        "claws": Double.self]
+    }
+
     // User properties
     var name: String
     var age: Int
