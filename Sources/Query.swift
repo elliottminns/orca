@@ -106,7 +106,7 @@ public class Query<T: Model> {
 
                 do {
                     try self.database.driver.insert(collection: self.collection,
-                                                    data: data)
+                                                    data: data, model: model)
                     err = nil
                 } catch {
                     err = error
@@ -127,7 +127,7 @@ public class Query<T: Model> {
 
             do {
                 try self.database.driver.insert(collection: self.collection,
-                                                data: data)
+                                                data: data, model: model)
 
                 err = nil
             } catch {
