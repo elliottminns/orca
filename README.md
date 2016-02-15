@@ -10,6 +10,10 @@ A non-blocking I/O, asynchronous ODM. Written in Swift, inspired by Mongoose.
 - [x] Non-blocking
 - [x] Beautiful Syntax
 
+## Supported Databases
+
+- SQLite via [Orca-Sqlite](https://github.com/elliottminns/orca-sqlite)
+
 ## Getting Started
 
 Orca is easy to set up, just add the following to your `Package.swift` under dependencies
