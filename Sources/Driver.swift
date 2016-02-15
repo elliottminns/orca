@@ -18,7 +18,7 @@ public protocol Driver {
         data: [String: DataType]) throws
 
     func insert(collection collection: String,
-        data: [String: DataType]) throws
+        data: [String: DataType], model: Model) throws
 
     func delete(collection collection: String, filters: [Filter]) throws
 
