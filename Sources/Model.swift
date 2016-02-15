@@ -4,6 +4,7 @@ import Foundation
 public protocol Model: class {
     var identifier: String? { get set }
     init?(serialized: [String: DataType])
+    static var schema: [String: DataType.Type] { get }
 }
 
 // MARK: - Reflection
