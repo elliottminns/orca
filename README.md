@@ -201,7 +201,7 @@ extension MyDatabaseDriver: Driver {
     }
 
     public func insert(collection collection: String,
-        data: [String: DataType]) throws {
+        data: [String: DataType], model: Model) throws {
             // Insert code...
     }
 
