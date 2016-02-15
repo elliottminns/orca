@@ -38,21 +38,21 @@ extension MemoryDriver: Driver {
     public func generateUniqueIdentifier() -> String {
         return NSUUID().UUIDString
     }
-    
+
     public func find(collection collection: String, filters: [Filter])
         throws -> [[String: DataType]] {
-        
+
             if filters.count == 0 {
-                
+
                 // Find all.
                 if let collection = self.store[collection] {
-                    
+
                     var models = [[String: DataType]]()
-                    
+
                     for (_, value) in collection {
                         models.append(value)
                     }
-                    
+
                     return models
                 } else {
                     throw DriverError.NotFound
@@ -64,17 +64,17 @@ extension MemoryDriver: Driver {
 
     public func findOne(collection collection: String,
         filters: [Filter]) throws -> [String: DataType] {
-        
+
         var id: String?
-        
+
         for filter in filters {
             if let filter = filter as? CompareFilter {
                 if filter.key == "identifier" {
-                    id = filter.value
+                    id = filter.value.toString()
                 }
             }
         }
-        
+
         if let id = id {
             if let data = self.store[collection]?[id] {
                 return data
@@ -84,33 +84,33 @@ extension MemoryDriver: Driver {
         } else {
             throw DriverError.NoIdentifier
         }
-        
+
     }
 
     public func update(collection collection: String, filters: [Filter],
          data: [String : DataType]) throws {
-        
+
         var original = try findOne(collection: collection, filters: filters)
-        
+
         guard let identifier = original["identifier"] as? String else {
             throw DriverError.NoIdentifier
         }
-        
+
         guard let _ = store[collection] else {
             throw DriverError.NotFound
         }
-        
+
         for (key, value) in data {
-            
+
             original[key] = value
         }
-        
+
         store[collection]?[identifier] = original
     }
 
     public func insert(collection collection: String,
-        data: [String: DataType]) throws {
-            
+        data: [String: DataType], model: Model) throws {
+
             guard let identifier = data["identifier"] as? String else {
                 throw DriverError.NoIdentifier
             }
@@ -139,14 +139,14 @@ extension MemoryDriver: Driver {
 
     public func delete (collection collection: String,
         filters: [Filter]) throws {
-        
+
         let object = try findOne(collection: collection, filters: filters)
-        
+
         guard let identifier = object["identifier"] as? String else {
             throw DriverError.NotFound
         }
-        
+
         store[collection]?[identifier] = nil
-        
+
     }
 }
