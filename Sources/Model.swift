@@ -7,6 +7,18 @@ public protocol Model: class {
     static var schema: [String: DataType.Type] { get }
 }
 
+extension Model {
+
+    static var schema() {
+
+        var schema = self.schema
+
+        schema["identifier"] = String.self
+
+        return schema
+    }
+}
+
 // MARK: - Reflection
 
 extension Model {
