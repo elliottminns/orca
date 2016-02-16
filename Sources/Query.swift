@@ -14,7 +14,7 @@ public class Query<T: Model> {
 
     let database: Orca
     let collection: String
-    let filters: [Filter]
+    var filters: [Filter]
 
     convenience init(database: Orca) {
         self.init(database: database, filters: [])
@@ -34,7 +34,8 @@ public class Query<T: Model> {
                 let driver = self.database.driver
 
                 let data = try driver.findOne(collection: self.collection,
-                                              filters: self.filters)
+                                              filters: self.filters,
+                                              schema: T.fullSchema())
 
                 let model = T(serialized: data)
 
@@ -65,7 +66,8 @@ public class Query<T: Model> {
                 let driver = self.database.driver
 
                 let dataModels = try driver.find(collection: self.collection,
-                                                 filters: self.filters)
+                                                 filters: self.filters,
+                                                 schema: T.fullSchema())
 
                 for data in dataModels {
                     if let model = T(serialized: data) {
@@ -84,7 +86,6 @@ public class Query<T: Model> {
     }
 
     func save(model: T, handler: SingleHandler) {
-
         if model.identifier == nil {
             insert(model, handler: handler)
         } else {
@@ -100,6 +101,8 @@ public class Query<T: Model> {
             if model.identifier == nil {
                 model.identifier =
                     self.database.driver.generateUniqueIdentifier()
+
+
                 let data = model.serialize()
 
                 let err: ErrorType?
@@ -121,13 +124,27 @@ public class Query<T: Model> {
     }
 
     func update(model: T, handler: SingleHandler) {
+
+        guard let identifier = model.identifier else {
+            handler(model: model, error: DriverError.NoIdentifier)
+            return
+        }
+
         dispatch_async(databaseQueue) {
+
             let data = model.serialize()
+
             let err: ErrorType?
 
             do {
-                try self.database.driver.insert(collection: self.collection,
-                                                data: data, model: model)
+                let compare = CompareFilter(key: "identifier",
+                    value: identifier, comparison: .Equals)
+                self.filters.append(compare)
+
+                try self.database.driver.update(collection: self.collection,
+                                                filters: self.filters,
+                                                data: data,
+                                                schema: T.fullSchema())
 
                 err = nil
             } catch {
@@ -147,7 +164,8 @@ public class Query<T: Model> {
 
             do {
                 try self.database.driver.delete(collection: self.collection,
-                                                filters: self.filters)
+                                                filters: self.filters,
+                                                schema: T.fullSchema())
                 err = nil
             } catch {
                 err = error
@@ -164,8 +182,8 @@ extension Query {
     func filter(key: String, _ value: String) -> Query {
 
 		let filter = CompareFilter(key: key, value: value, comparison: .Equals)
-
-        return Query(database: database, filters: self.filters + [filter])
+        self.filters.append(filter)
+        return Query(database: self.database, filters: self.filters)
 	}
 
 }

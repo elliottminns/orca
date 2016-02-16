@@ -89,8 +89,8 @@ extension Model {
         self.save(database: Orca.defaultOrca, handler: handler)
     }
 
-    public func save(database database: Orca, handler: (error: ErrorType?) -> ()) {
-
+    public func save(database database: Orca,
+        handler: (error: ErrorType?) -> ()) {
             Query(database: database).save(self) { (model, error) in
                 handler(error: error)
 

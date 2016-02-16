@@ -39,7 +39,7 @@ extension MemoryDriver: Driver {
         return NSUUID().UUIDString
     }
 
-    public func find(collection collection: String, filters: [Filter])
+    public func find(collection collection: String, filters: [Filter], schema: [String: DataType.Type])
         throws -> [[String: DataType]] {
 
             if filters.count == 0 {
@@ -63,7 +63,7 @@ extension MemoryDriver: Driver {
     }
 
     public func findOne(collection collection: String,
-        filters: [Filter]) throws -> [String: DataType] {
+        filters: [Filter], schema: [String: DataType.Type]) throws -> [String: DataType] {
 
         var id: String?
 
@@ -88,9 +88,10 @@ extension MemoryDriver: Driver {
     }
 
     public func update(collection collection: String, filters: [Filter],
-         data: [String : DataType]) throws {
+         data: [String : DataType],
+         schema: [String: DataType.Type]) throws {
 
-        var original = try findOne(collection: collection, filters: filters)
+        var original = try findOne(collection: collection, filters: filters, schema: schema)
 
         guard let identifier = original["identifier"] as? String else {
             throw DriverError.NoIdentifier
@@ -138,9 +139,10 @@ extension MemoryDriver: Driver {
     }
 
     public func delete (collection collection: String,
-        filters: [Filter]) throws {
+        filters: [Filter], schema: [String: DataType.Type]) throws {
 
-        let object = try findOne(collection: collection, filters: filters)
+        let object = try findOne(collection: collection, filters: filters,
+            schema: schema)
 
         guard let identifier = object["identifier"] as? String else {
             throw DriverError.NotFound

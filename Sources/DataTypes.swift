@@ -18,6 +18,7 @@ extension Orca {
 public protocol DataType {
     static func fromString(string: String) -> Self?
     func toString() -> String
+    static var valueType: ValueType { get }
 }
 
 extension DataType {
@@ -48,6 +49,10 @@ extension String: DataType {
     public func toString() -> String {
         return "\(self)"
     }
+
+    static public var valueType: ValueType {
+        return .String
+    }
 }
 
 extension Int: DataType {
@@ -57,6 +62,10 @@ extension Int: DataType {
 
     public func toString() -> String {
         return "\(self)"
+    }
+
+    static public var valueType: ValueType {
+        return .Int
     }
 }
 
@@ -68,6 +77,12 @@ extension Double: DataType {
     public func toString() -> String {
         return "\(self)"
     }
+
+    static public var valueType: ValueType {
+        return .Double
+    }
+
+
 }
 
 extension Float: DataType {
@@ -78,6 +93,10 @@ extension Float: DataType {
     public func toString() -> String {
         return "\(self)"
     }
+
+    static public var valueType: ValueType {
+        return .Float
+    }
 }
 
 extension Bool: DataType {
@@ -87,5 +106,9 @@ extension Bool: DataType {
 
     public func toString() -> String {
         return self ? "1" : "0"
+    }
+
+    static public var valueType: ValueType {
+        return .Bool
     }
 }
