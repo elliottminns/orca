@@ -6,11 +6,11 @@ let databaseQueue = dispatch_queue_create("com.orca.queue",
 
 public class Query<T: Model> {
 
-    public typealias Handler = (error: ErrorType?) -> ()
-    public typealias SingleHandler = (model: T?, error: ErrorType?) -> ()
-    public typealias MultipleHandler = (models: [T], error: ErrorType?) -> ()
+    public typealias Handler = (error: ErrorProtocol?) -> ()
+    public typealias SingleHandler = (model: T?, error: ErrorProtocol?) -> ()
+    public typealias MultipleHandler = (models: [T], error: ErrorProtocol?) -> ()
     public typealias SaveHandler = (identifier: String?,
-         error: ErrorType?) -> ()
+         error: ErrorProtocol?) -> ()
 
     let database: Orca
     let collection: String
@@ -59,7 +59,7 @@ public class Query<T: Model> {
     public func find(model: T.Type, handler: MultipleHandler) {
         dispatch_async(databaseQueue) {
 
-            let err: ErrorType?
+            let err: ErrorProtocol?
             var models: [T] = []
             do {
 
@@ -105,7 +105,7 @@ public class Query<T: Model> {
 
                 let data = model.serialize()
 
-                let err: ErrorType?
+                let err: ErrorProtocol?
 
                 do {
                     try self.database.driver.insert(collection: self.collection,
@@ -134,7 +134,7 @@ public class Query<T: Model> {
 
             let data = model.serialize()
 
-            let err: ErrorType?
+            let err: ErrorProtocol?
 
             do {
                 let compare = CompareFilter(key: "identifier",
@@ -160,7 +160,7 @@ public class Query<T: Model> {
     func delete(model: T, handler: Handler) {
         dispatch_async(databaseQueue) {
 
-            let err: ErrorType?
+            let err: ErrorProtocol?
 
             do {
                 try self.database.driver.delete(collection: self.collection,

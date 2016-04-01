@@ -85,23 +85,23 @@ extension Model {
 
 extension Model {
 
-    public func save(handler: (error: ErrorType?) -> ()) {
+    public func save(handler: (error: ErrorProtocol?) -> ()) {
         self.save(database: Orca.defaultOrca, handler: handler)
     }
 
     public func save(database database: Orca,
-        handler: (error: ErrorType?) -> ()) {
+        handler: (error: ErrorProtocol?) -> ()) {
             Query(database: database).save(self) { (model, error) in
                 handler(error: error)
 
         }
     }
 
-    public func delete(handler: (error: ErrorType?) -> ()) {
+    public func delete(handler: (error: ErrorProtocol?) -> ()) {
         self.delete(Orca.defaultOrca, handler: handler)
     }
 
-    public func delete(database: Orca, handler: (error: ErrorType?) -> ()) {
+    public func delete(database: Orca, handler: (error: ErrorProtocol?) -> ()) {
 
         guard let identifier = self.identifier else {
             handler(error: DriverError.NoIdentifier)
@@ -115,33 +115,33 @@ extension Model {
     }
 
     public static func find(identifier: String,
-        handler: (model: Self?, error: ErrorType?) -> ()) {
+        handler: (model: Self?, error: ErrorProtocol?) -> ()) {
 
         find(Orca.defaultOrca, identifier: identifier, handler: handler)
     }
 
     public static func find(database: Orca, identifier: String,
-                            handler: (model: Self?, error: ErrorType?) -> ()) {
+                            handler: (model: Self?, error: ErrorProtocol?) -> ()) {
         Query(database: database).find(identifier, handler: handler)
     }
 
-    public static func findAll(handler: (models: [Self], error: ErrorType?) -> ()) {
+    public static func findAll(handler: (models: [Self], error: ErrorProtocol?) -> ()) {
         findAll(Orca.defaultOrca, handler: handler)
     }
 
     public static func findAll(database: Orca,
-                               handler: (models: [Self], error: ErrorType?) -> ()) {
+                               handler: (models: [Self], error: ErrorProtocol?) -> ()) {
         Query(database: database).find(self, handler: handler)
     }
 
     static var collection: String {
         var type: String = String(self.dynamicType)
-        if let range = type.rangeOfString(".Type") {
-            type.removeRange(range)
+        if let range = type.range(of: ".Type") {
+            type.removeSubrange(range)
         }
 
         type.append(Character("s"))
-        type = type.lowercaseString
+        type = type.lowercased()
 
         return type
     }

@@ -1,4 +1,4 @@
-public enum DriverError: ErrorType {
+public enum DriverError: ErrorProtocol {
     case NoIdentifier
     case NotFound
     case NotImplemented

@@ -36,7 +36,7 @@ extension MemoryDriver: Driver {
     }
 
     public func generateUniqueIdentifier() -> String {
-        return NSUUID().UUIDString
+        return NSUUID().uuidString
     }
 
     public func find(collection collection: String, filters: [Filter], schema: [String: DataType.Type])
