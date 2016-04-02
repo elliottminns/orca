@@ -1,24 +1,42 @@
+public enum DatabaseType {
+    case Memory
+    case Mongo
+}
+
+extension DatabaseType {
+    var driver: Driver {
+        switch self {
+            case .Mongo:
+                return MongoDriver();
+            case .Memory:
+                return MemoryDriver();
+        }
+    }
+}
 
 
-
-final public class Orca {
+final public class Database {
 
     static var setDefault = false
 
-    public static var defaultOrca: Orca = Orca()
+    public static var defaultDatabase: Database = Database()
 
-    public let driver: Driver
+    let type: DatabaseType
+    
+    let driver: Driver
 
     init() {
-        self.driver = MemoryDriver()
+        self.type = .Mongo
+        self.driver = DatabaseType.Mongo.driver
     }
 
-    public init(driver: Driver) {
-        self.driver = driver
+    public init(type: DatabaseType) {
+        self.type = type
+        self.driver = type.driver
 
-        if Orca.setDefault == false {
-            Orca.defaultOrca = self
-            Orca.setDefault = true
+        if Database.setDefault == false {
+            Database.defaultDatabase = self
+            Database.setDefault = true
         }
     }
 }

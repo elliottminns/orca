@@ -18,6 +18,11 @@ final public class MemoryDriver {
 
 extension MemoryDriver: Driver {
 
+    public func connect(host host: String, port: Int, database: String,
+        handler: (error: ErrorProtocol?) -> ()) {
+        handler(error: nil)
+    }
+
     public func printDatabase() {
         print("database: [{")
         for (key, collection) in store {

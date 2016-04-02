@@ -86,10 +86,10 @@ extension Model {
 extension Model {
 
     public func save(handler: (error: ErrorProtocol?) -> ()) {
-        self.save(database: Orca.defaultOrca, handler: handler)
+        self.save(database: Database.defaultDatabase, handler: handler)
     }
 
-    public func save(database database: Orca,
+    public func save(database database: Database,
         handler: (error: ErrorProtocol?) -> ()) {
             Query(database: database).save(self) { (model, error) in
                 handler(error: error)
@@ -98,10 +98,10 @@ extension Model {
     }
 
     public func delete(handler: (error: ErrorProtocol?) -> ()) {
-        self.delete(Orca.defaultOrca, handler: handler)
+        self.delete(Database.defaultDatabase, handler: handler)
     }
 
-    public func delete(database: Orca, handler: (error: ErrorProtocol?) -> ()) {
+    public func delete(database: Database, handler: (error: ErrorProtocol?) -> ()) {
 
         guard let identifier = self.identifier else {
             handler(error: DriverError.NoIdentifier)
@@ -117,19 +117,19 @@ extension Model {
     public static func find(identifier: String,
         handler: (model: Self?, error: ErrorProtocol?) -> ()) {
 
-        find(Orca.defaultOrca, identifier: identifier, handler: handler)
+        find(Database.defaultDatabase, identifier: identifier, handler: handler)
     }
 
-    public static func find(database: Orca, identifier: String,
+    public static func find(database: Database, identifier: String,
                             handler: (model: Self?, error: ErrorProtocol?) -> ()) {
         Query(database: database).find(identifier, handler: handler)
     }
 
     public static func findAll(handler: (models: [Self], error: ErrorProtocol?) -> ()) {
-        findAll(Orca.defaultOrca, handler: handler)
+        findAll(Database.defaultDatabase, handler: handler)
     }
 
-    public static func findAll(database: Orca,
+    public static func findAll(database: Database,
                                handler: (models: [Self], error: ErrorProtocol?) -> ()) {
         Query(database: database).find(self, handler: handler)
     }

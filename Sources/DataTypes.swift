@@ -9,7 +9,7 @@ public enum ValueType {
     case Bool
 }
 
-extension Orca {
+extension Database {
     static public var supportedTypes: [DataType.Type] {
         return [String.self, Int.self, Double.self, Float.self, Bool.self]
     }
@@ -29,7 +29,7 @@ extension DataType {
 
     static func dataTypeFromTypeString(string: String) -> DataType.Type? {
 
-        for type in Orca.supportedTypes {
+        for type in Database.supportedTypes {
 
             if "\(type)" == string {
                 return type

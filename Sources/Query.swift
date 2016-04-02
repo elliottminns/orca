@@ -12,15 +12,15 @@ public class Query<T: Model> {
     public typealias SaveHandler = (identifier: String?,
          error: ErrorProtocol?) -> ()
 
-    let database: Orca
+    let database: Database
     let collection: String
     var filters: [Filter]
 
-    convenience init(database: Orca) {
+    convenience init(database: Database) {
         self.init(database: database, filters: [])
     }
 
-    init(database: Orca, filters: [Filter]) {
+    init(database: Database, filters: [Filter]) {
         self.database = database
         collection = T.collection
         self.filters = filters
