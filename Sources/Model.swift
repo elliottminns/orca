@@ -4,16 +4,16 @@ import Foundation
 public protocol Model: class {
     var identifier: String? { get set }
     init?(serialized: [String: DataType])
-    static var schema: [String: DataType.Type] { get }
+    static var schema: [String: SchemaType] { get }
 }
 
 extension Model {
 
-    static public func fullSchema() -> [String: DataType.Type] {
+    static public func fullSchema() -> [String: SchemaType] {
 
         var schema = self.schema
 
-        schema["identifier"] = String.self
+        schema["identifier"] = .String
 
         return schema
     }
@@ -24,7 +24,9 @@ extension Model {
 extension Model {
 
     func valueFromAny(any: Any) -> DataType? {
+
         let value: DataType?
+
         if let v = any as? DataType {
             value = v
         } else if let v = any as? Double {

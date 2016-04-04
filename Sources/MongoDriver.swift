@@ -34,7 +34,7 @@ class MongoDriver {
     }
 
     func dataTypeFromJson(json: [String: Json],
-        forSchema schema: [String: DataType.Type]) -> [String: DataType] {
+        forSchema schema: Schema) -> [String: DataType] {
             var values = [String: DataType]()
 
             for (key, value) in json {
@@ -48,7 +48,7 @@ class MongoDriver {
                 } else if let type = schema[key] {
                     let v: DataType?
 
-                    switch type.valueType {
+                    switch type {
                     case .Double:
                         v = value.doubleValue
                     case .Int:
@@ -69,7 +69,7 @@ class MongoDriver {
     }
 
     func dataTypeFromDocument(document: MongoDocument,
-        forSchema schema: [String: DataType.Type]) -> [String: DataType] {
+        forSchema schema: Schema) -> [String: DataType] {
 
             guard let data = document.data.objectValue else { return [:] }
 
@@ -117,12 +117,16 @@ class MongoDriver {
 
 extension MongoDriver: Driver {
 
+    func connect(url: String, handler: (error: ErrorProtocol?) -> ()) {
+
+    }
+
     func generateUniqueIdentifier() -> String {
         return MongoDocument.generateObjectId()
     }
 
     func findOne(collection collection: String, filters: [Filter],
-            schema: [String: DataType.Type]) throws -> [String: DataType] {
+            schema: Schema) throws -> [String: DataType] {
 
             guard let database = mongo.database else {
                 throw DriverError.NotFound
@@ -143,7 +147,7 @@ extension MongoDriver: Driver {
     }
 
     func find(collection collection: String, filters: [Filter],
-        schema: [String: DataType.Type]) throws -> [[String: DataType]] {
+        schema: Schema) throws -> [[String: DataType]] {
 
             guard let database = mongo.database else {
                 throw DriverError.NotFound
@@ -167,7 +171,7 @@ extension MongoDriver: Driver {
     }
 
     func update(collection collection: String, filters: [Filter],
-        data: [String: DataType], schema: [String: DataType.Type]) throws {
+        data: [String: DataType], schema: Schema) throws {
 
             guard let database = mongo.database else {
                 throw DriverError.NotFound
@@ -199,7 +203,7 @@ extension MongoDriver: Driver {
     }
 
     func delete(collection collection: String, filters: [Filter],
-        schema: [String: DataType.Type]) throws {
+        schema: Schema) throws {
 
         guard let database = mongo.database else {
             throw DriverError.NotFound

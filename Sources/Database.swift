@@ -39,4 +39,8 @@ final public class Database {
             Database.setDefault = true
         }
     }
+
+    public func connect(url: String, handler: (error: ErrorProtocol?) -> ()) {
+        driver.connect(url, handler: handler)
+    }
 }

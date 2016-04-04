@@ -1,7 +1,7 @@
 
 import Foundation
 
-public enum ValueType {
+public enum SchemaType {
     case String
     case Int
     case Double
@@ -18,7 +18,7 @@ extension Database {
 public protocol DataType {
     static func fromString(string: String) -> Self?
     func toString() -> String
-    static var valueType: ValueType { get }
+    static var valueType: SchemaType { get }
 }
 
 extension DataType {
@@ -50,7 +50,7 @@ extension String: DataType {
         return "\(self)"
     }
 
-    static public var valueType: ValueType {
+    static public var valueType: SchemaType {
         return .String
     }
 }
@@ -64,7 +64,7 @@ extension Int: DataType {
         return "\(self)"
     }
 
-    static public var valueType: ValueType {
+    static public var valueType: SchemaType {
         return .Int
     }
 }
@@ -78,7 +78,7 @@ extension Double: DataType {
         return "\(self)"
     }
 
-    static public var valueType: ValueType {
+    static public var valueType: SchemaType {
         return .Double
     }
 
@@ -94,7 +94,7 @@ extension Float: DataType {
         return "\(self)"
     }
 
-    static public var valueType: ValueType {
+    static public var valueType: SchemaType {
         return .Float
     }
 }
@@ -108,7 +108,7 @@ extension Bool: DataType {
         return self ? "1" : "0"
     }
 
-    static public var valueType: ValueType {
+    static public var valueType: SchemaType {
         return .Bool
     }
 }
