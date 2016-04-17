@@ -27,13 +27,13 @@ class MongoDriver {
         mongo = MongoDB()
     }
 
-    func connect(host host: String, port: Int, database: String,
+    func connect(host: String, port: Int, database: String,
         handler: (error: ErrorProtocol?) -> ()) {
         self.mongo.connect(host: host, port: port, database: database,
             handler: handler)
     }
 
-    func dataTypeFromJson(json: [String: Json],
+    func dataTypeFromJson(_ json: [String: Json],
         forSchema schema: Schema) -> [String: DataType] {
             var values = [String: DataType]()
 
@@ -68,7 +68,7 @@ class MongoDriver {
 
     }
 
-    func dataTypeFromDocument(document: MongoDocument,
+    func dataTypeFromDocument(_ document: MongoDocument,
         forSchema schema: Schema) -> [String: DataType] {
 
             guard let data = document.data.objectValue else { return [:] }
@@ -94,7 +94,7 @@ class MongoDriver {
         return Json(converted)
     }
 
-    func parseFiltersToDocument(filters filters: [Filter]) throws
+    func parseFiltersToDocument(filters: [Filter]) throws
         -> Json {
 
         var identifier: String? = nil
@@ -117,7 +117,7 @@ class MongoDriver {
 
 extension MongoDriver: Driver {
 
-    func connect(url: String, handler: (error: ErrorProtocol?) -> ()) {
+    func connect(_ url: String, handler: (error: ErrorProtocol?) -> ()) {
 
     }
 
@@ -125,7 +125,7 @@ extension MongoDriver: Driver {
         return MongoDocument.generateObjectId()
     }
 
-    func findOne(collection collection: String, filters: [Filter],
+    func findOne(collection: String, filters: [Filter],
             schema: Schema) throws -> [String: DataType] {
 
             guard let database = mongo.database else {
@@ -146,7 +146,7 @@ extension MongoDriver: Driver {
             }
     }
 
-    func find(collection collection: String, filters: [Filter],
+    func find(collection: String, filters: [Filter],
         schema: Schema) throws -> [[String: DataType]] {
 
             guard let database = mongo.database else {
@@ -170,7 +170,7 @@ extension MongoDriver: Driver {
 
     }
 
-    func update(collection collection: String, filters: [Filter],
+    func update(collection: String, filters: [Filter],
         data: [String: DataType], schema: Schema) throws {
 
             guard let database = mongo.database else {
@@ -181,18 +181,18 @@ extension MongoDriver: Driver {
                 database: database)
 
             let query = try parseFiltersToDocument(filters: filters)
-            let updateData = mongoDBDocumentData(data)
+            let updateData = mongoDBDocumentData(data: data)
             try collection.update(query, newValue: updateData)
     }
 
-    func insert(collection collection: String,
+    func insert(collection: String,
         data: [String: DataType], model: Model) throws {
 
             guard let database = mongo.database else {
                 throw DriverError.NotFound
             }
 
-            let converted = mongoDBDocumentData(data)
+            let converted = mongoDBDocumentData(data: data)
 
             let collection = MongoCollection(name: collection, database: database)
 
@@ -202,7 +202,7 @@ extension MongoDriver: Driver {
 
     }
 
-    func delete(collection collection: String, filters: [Filter],
+    func delete(collection: String, filters: [Filter],
         schema: Schema) throws {
 
         guard let database = mongo.database else {

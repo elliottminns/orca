@@ -1,9 +1,6 @@
 import Foundation
 import Echo
 
-let databaseQueue = dispatch_queue_create("com.orca.queue",
-                                          DISPATCH_QUEUE_SERIAL)
-
 public class Query<T: Model> {
 
     public typealias Handler = (error: ErrorProtocol?) -> ()
@@ -26,100 +23,77 @@ public class Query<T: Model> {
         self.filters = filters
     }
 
-    public func first(handler: SingleHandler) {
+    public func first(_ handler: SingleHandler) {
+        do {
 
-        dispatch_async(databaseQueue) {
-            do {
+            let driver = self.database.driver
 
-                let driver = self.database.driver
+            let data = try driver.findOne(collection: self.collection,
+                                            filters: self.filters,
+                                            schema: T.fullSchema())
 
-                let data = try driver.findOne(collection: self.collection,
-                                              filters: self.filters,
-                                              schema: T.fullSchema())
+            let model = T(serialized: data)
 
-                let model = T(serialized: data)
+            handler(model: model, error: nil)
 
-                dispatch_async(dispatch_get_main_queue(), {
-                    handler(model: model, error: nil)
-                })
-
-            } catch {
-
-                dispatch_async(dispatch_get_main_queue(), {
-                    handler(model: nil, error: error)
-                })
-            }
-        }
+        } catch {
+             handler(model: nil, error: error)
+         }
     }
 
-    public func find(id: String, handler: SingleHandler) {
+    public func find(_ id: String, handler: SingleHandler) {
 		filter("identifier", id).first(handler)
 	}
 
-    public func find(model: T.Type, handler: MultipleHandler) {
-        dispatch_async(databaseQueue) {
-
-            let err: ErrorProtocol?
-            var models: [T] = []
-            do {
-
-                let driver = self.database.driver
-
-                let dataModels = try driver.find(collection: self.collection,
-                                                 filters: self.filters,
+    public func find(_ model: T.Type, handler: MultipleHandler) {
+        let err: ErrorProtocol?
+        var models: [T] = []
+        do {
+            let driver = self.database.driver
+            let dataModels = try driver.find(collection: self.collection,
+                                                filters: self.filters,
                                                  schema: T.fullSchema())
-
-                for data in dataModels {
-                    if let model = T(serialized: data) {
-                        models.append(model)
-                    }
+            for data in dataModels {
+                if let model = T(serialized: data) {
+                    models.append(model)
                 }
-                err = nil
-            } catch {
-                err = error
             }
-
-            dispatch_async(dispatch_get_main_queue()) {
-                handler(models: models, error: err)
-            }
+            err = nil
+        } catch {
+            err = error
         }
+
+        handler(models: models, error: err)
     }
 
-    func save(model: T, handler: SingleHandler) {
+    func save(_ model: T, handler: SingleHandler) {
         if model.identifier == nil {
-            insert(model, handler: handler)
+            insert(model: model, handler: handler)
         } else {
-            update(model, handler: handler)
+            update(model: model, handler: handler)
         }
 
     }
 
     func insert(model: T, handler: SingleHandler) {
 
-        dispatch_async(databaseQueue) {
-
-            if model.identifier == nil {
-                model.identifier =
-                    self.database.driver.generateUniqueIdentifier()
+        if model.identifier == nil {
+            model.identifier = self.database.driver.generateUniqueIdentifier()
 
 
-                let data = model.serialize()
+            let data = model.serialize()
 
-                let err: ErrorProtocol?
+            let err: ErrorProtocol?
 
-                do {
-                    try self.database.driver.insert(collection: self.collection,
+            do {
+                 try self.database.driver.insert(collection: self.collection,
                                                     data: data, model: model)
-                    err = nil
-                } catch {
-                    err = error
-                }
-
-                dispatch_async(dispatch_get_main_queue()) {
-                    handler(model: model, error: err)
-                }
+                err = nil
+            } catch {
+                err = error
             }
 
+            handler(model: model, error: err)
         }
     }
 
@@ -130,36 +104,29 @@ public class Query<T: Model> {
             return
         }
 
-        dispatch_async(databaseQueue) {
+        let data = model.serialize()
 
-            let data = model.serialize()
+        let err: ErrorProtocol?
 
-            let err: ErrorProtocol?
-
-            do {
-                let compare = CompareFilter(key: "identifier",
+        do {
+            let compare = CompareFilter(key: "identifier",
                     value: identifier, comparison: .Equals)
-                self.filters.append(compare)
+            self.filters.append(compare)
 
-                try self.database.driver.update(collection: self.collection,
+            try self.database.driver.update(collection: self.collection,
                                                 filters: self.filters,
                                                 data: data,
                                                 schema: T.fullSchema())
 
-                err = nil
-            } catch {
-                err = error
-            }
-
-            dispatch_async(dispatch_get_main_queue()) {
-                handler(model: model, error: err)
-            }
+            err = nil
+        } catch {
+            err = error
         }
+
+        handler(model: model, error: err)
     }
 
-    func delete(model: T, handler: Handler) {
-        dispatch_async(databaseQueue) {
-
+    func delete(_ model: T, handler: Handler) {
             let err: ErrorProtocol?
 
             do {
@@ -173,13 +140,12 @@ public class Query<T: Model> {
 
             handler(error: err)
 
-        }
     }
 }
 
 extension Query {
 
-    func filter(key: String, _ value: String) -> Query {
+    func filter(_ key: String, _ value: String) -> Query {
 
 		let filter = CompareFilter(key: key, value: value, comparison: .Equals)
         self.filters.append(filter)

@@ -8,25 +8,25 @@ public typealias Schema = [String: SchemaType]
 
 public protocol Driver {
 
-    func connect(url: String, handler: (error: ErrorProtocol?) -> ())
+    func connect(_ url: String, handler: (error: ErrorProtocol?) -> ())
 
     func generateUniqueIdentifier() -> String
 
-    func findOne(collection collection: String,
+    func findOne(collection: String,
         filters: [Filter], schema: Schema)
         throws -> [String: DataType]
 
-    func find(collection collection: String, filters: [Filter],
+    func find(collection: String, filters: [Filter],
         schema: Schema) throws -> [[String: DataType]]
 
-    func update(collection collection: String, filters: [Filter],
+    func update(collection: String, filters: [Filter],
         data: [String : DataType],
         schema: Schema) throws
 
-    func insert(collection collection: String,
+    func insert(collection: String,
         data: [String: DataType], model: Model) throws
 
-    func delete(collection collection: String, filters: [Filter],
+    func delete(collection: String, filters: [Filter],
         schema: Schema) throws
 
 }

@@ -23,7 +23,7 @@ extension Model {
 
 extension Model {
 
-    func valueFromAny(any: Any) -> DataType? {
+    func valueFromAny(_ any: Any) -> DataType? {
 
         let value: DataType?
 
@@ -91,7 +91,7 @@ extension Model {
         self.save(database: Database.defaultDatabase, handler: handler)
     }
 
-    public func save(database database: Database,
+    public func save(database: Database,
         handler: (error: ErrorProtocol?) -> ()) {
             Query(database: database).save(self) { (model, error) in
                 handler(error: error)
@@ -100,7 +100,7 @@ extension Model {
     }
 
     public func delete(handler: (error: ErrorProtocol?) -> ()) {
-        self.delete(Database.defaultDatabase, handler: handler)
+        self.delete(database: Database.defaultDatabase, handler: handler)
     }
 
     public func delete(database: Database, handler: (error: ErrorProtocol?) -> ()) {
@@ -119,7 +119,8 @@ extension Model {
     public static func find(identifier: String,
         handler: (model: Self?, error: ErrorProtocol?) -> ()) {
 
-        find(Database.defaultDatabase, identifier: identifier, handler: handler)
+        find(database: Database.defaultDatabase, 
+             identifier: identifier, handler: handler)
     }
 
     public static func find(database: Database, identifier: String,
@@ -128,7 +129,7 @@ extension Model {
     }
 
     public static func findAll(handler: (models: [Self], error: ErrorProtocol?) -> ()) {
-        findAll(Database.defaultDatabase, handler: handler)
+        findAll(database: Database.defaultDatabase, handler: handler)
     }
 
     public static func findAll(database: Database,

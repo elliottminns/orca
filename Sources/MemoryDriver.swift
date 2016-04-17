@@ -18,7 +18,7 @@ final public class MemoryDriver {
 
 extension MemoryDriver: Driver {
 
-    public func connect(url: String, handler: (error: ErrorProtocol?) -> ()) {
+    public func connect(_ url: String, handler: (error: ErrorProtocol?) -> ()) {
         handler(error: nil)
     }
 
@@ -43,7 +43,7 @@ extension MemoryDriver: Driver {
         return NSUUID().uuidString
     }
 
-    public func find(collection collection: String, filters: [Filter], schema: Schema)
+    public func find(collection: String, filters: [Filter], schema: Schema)
         throws -> [[String: DataType]] {
 
             if filters.count == 0 {
@@ -66,7 +66,7 @@ extension MemoryDriver: Driver {
             }
     }
 
-    public func findOne(collection collection: String,
+    public func findOne(collection: String,
         filters: [Filter], schema: Schema) throws -> [String: DataType] {
 
         var id: String?
@@ -91,7 +91,7 @@ extension MemoryDriver: Driver {
 
     }
 
-    public func update(collection collection: String, filters: [Filter],
+    public func update(collection: String, filters: [Filter],
          data: [String : DataType],
          schema: Schema) throws {
 
@@ -113,7 +113,7 @@ extension MemoryDriver: Driver {
         store[collection]?[identifier] = original
     }
 
-    public func insert(collection collection: String,
+    public func insert(collection: String,
         data: [String: DataType], model: Model) throws {
 
             guard let identifier = data["identifier"] as? String else {
@@ -142,7 +142,7 @@ extension MemoryDriver: Driver {
             store[collection] = collectionData
     }
 
-    public func delete (collection collection: String,
+    public func delete (collection: String,
         filters: [Filter], schema: Schema) throws {
 
         let object = try findOne(collection: collection, filters: filters,
