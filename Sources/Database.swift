@@ -44,7 +44,7 @@ final public class Database {
         driver.connect(url, handler: handler)
     }
 
-    public static func connect(url: String, handler: (error: ErrorProtocol?) -> () {
+    public static func connect(url: String, handler: (error: ErrorProtocol?) -> ()) {
         defaultDatabase.connect(url: url, handler: handler)
     }
 }
