@@ -118,7 +118,7 @@ class MongoDriver {
 extension MongoDriver: Driver {
 
     func connect(_ url: String, handler: (error: ErrorProtocol?) -> ()) {
-
+        self.mongo.connect(uri: url, callback: handler)
     }
 
     func generateUniqueIdentifier() -> String {
